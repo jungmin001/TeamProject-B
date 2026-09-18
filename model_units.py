@@ -1,7 +1,9 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import 
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+
 def split_xy(df, feature_cols, target_col):
     X = df[feature_cols]
     y = df['label']
@@ -17,17 +19,24 @@ def train_random_forest(X_train, y_train, random_state=42):
     model.fit(X_train,y_train)
     return model
 
-def evaluate_model(y_true, y_pred):
-#     """정확도와 혼동행렬을 반환합니다."""
-    accuracy = accuracy_score(y_true,y_pred)
-    tn , fp ,fn,tp = 
+def evaluate_model(y_test, y_pred):
+    accuracy = accuracy_score(y_test,y_pred)
+    tn,fp ,fn,tp = confusion_matrix(y_test, y_pred).ravel()
+    return accuracy , tn, fp,fn,tp
+
 
 def predict_failure_probability(model, X_test):
-#     """고장 임박 클래스 1의 예측 확률을 반환합니다."""
-def apply_threshold(y_proba, threshold):
+    probability = model.predict_proba(X_test)[:, 1]
+    return probability
+
+def apply_threshold(y_proba, threshold=0.5):
 #     """예측 확률을 임계값 기준으로 0 또는 1로 변환합니다."""
+    
+
 def calculate_threshold_cost(y_true, y_pred, cost_fp=10, cost_fn=100):
 #     """FP와 FN 비용을 사용해 총비용을 계산합니다."""
+
+
 def find_best_threshold(y_true, y_proba, thresholds, cost_fp=10, cost_fn=100):
 #     """후보 임계값별 총비용을 비교하고 비용이 가장 낮은 임계값을 반환합니다."""
 
