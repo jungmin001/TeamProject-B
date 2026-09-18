@@ -3,10 +3,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import ConfusionMatrixDisplay
+import numpy as np
 
 def split_xy(df, feature_cols, target_col):
     X = df[feature_cols]
-    y = df['label']
+    y = df['failure_soon']
     return X,y
 
 def split_train_test(X, y, test_size=0.2, random_state=42):
@@ -30,15 +31,25 @@ def predict_failure_probability(model, X_test):
     return probability
 
 def apply_threshold(y_proba, threshold=0.5):
-#     """예측 확률을 임계값 기준으로 0 또는 1로 변환합니다."""
-    
+    err =  (np.array(y_proba) >= threshold).astype(int)
+    return err
 
 def calculate_threshold_cost(y_true, y_pred, cost_fp=10, cost_fn=100):
-#     """FP와 FN 비용을 사용해 총비용을 계산합니다."""
-
+    tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+    total_cost = (fp * cost_fp) + (fn * cost_fn)
+    
+    return total_cost
 
 def find_best_threshold(y_true, y_proba, thresholds, cost_fp=10, cost_fn=100):
-#     """후보 임계값별 총비용을 비교하고 비용이 가장 낮은 임계값을 반환합니다."""
-
-
-# `find_best_threshold()`는 후보 임계값별 결과표와 최적 임계값을 함께 반환하도록 작성합니다. 반환 형식은 `dict`, `tuple`, `DataFrame` 중 팀에서 정해도 됩니다. 단, `main.py` 또는 `main.ipynb`에서 후보 임계값별 총비용과 최적 임계값을 출력할 수 있어야 합니다.
+    best_threshold = None
+    min_cost = float('inf')  
+    
+    for th in thresholds:
+        y_pred = apply_threshold(y_proba, threshold=th)
+        current_cost = calculate_threshold_cost(y_true, y_pred, cost_fp=cost_fp, cost_fn=cost_fn)
+        
+        if current_cost < min_cost:
+            min_cost = current_cost
+            best_threshold = th
+            
+    return best_threshold
