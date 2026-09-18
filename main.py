@@ -3,7 +3,8 @@ import anomaly
 import model_units
 
 print("MIMII 데이터")
-df = data_units.load_dataset("data/28_mimii_features_sample_102_260917_3.csv")
+DataFileLocation = input("CSV파일 경로를 입력 하세요 : ")
+df = data_units.load_dataset(DataFileLocation)
 
 summ = data_units.summarize_dataset(df)
 print(summ)
@@ -35,11 +36,11 @@ print(f"정확도: {accuracy:.4f} | TN: {tn}, FP: {fp}, FN: {fn}, TP: {tp}")
 probability = model_units.predict_failure_probability(model, X_test)
 y_proba = probability
 
-err = model_units.apply_threshold(y_proba, threshold=0.5)
+y_pred_default = model_units.apply_threshold(y_proba, threshold=0.5)
 
 thresholds = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 
-total_cost= model_units.calculate_threshold_cost(y_test, y_pred, cost_fp=10, cost_fn=100)
+total_cost= model_units.calculate_threshold_cost(y_test, y_pred_default, cost_fp=10, cost_fn=100)
 print(f"기본 모델 총 비용: {total_cost}")
 
 best_threshold=  model_units.find_best_threshold(y_test, y_proba, thresholds, cost_fp=10, cost_fn=100)

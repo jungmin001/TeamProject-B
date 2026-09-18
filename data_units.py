@@ -3,9 +3,15 @@ import numpy
 
 
 def load_dataset(F):
-    print("CSV 파일을 불러와 DataFrame으로 반환합니다.")
-    df = pd.read_csv(F)
-    return df
+    try:
+        print("LogTemp : Warning File load Complete! :D")
+        return pd.read_csv(F)
+    except FileNotFoundError:   # File path error
+        print("LogTemp : Error Failed to load CSV file!! ;(")
+        return None
+    except Exception as e:      # No file
+        print("LogTemp : Error Failed to load CSV file!! ;(")
+        return None
 
 def summarize_dataset(df, target_col=None):
     data = {
